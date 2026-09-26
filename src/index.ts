@@ -1,5 +1,5 @@
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-import 'dotenv/config'
+import 'dotenv/config';
 
 import OpenAI from 'openai';
 import type { ChatCompletionMessageParam } from 'openai/resources/chat/completions';
@@ -10,7 +10,7 @@ const baseURL: string | undefined = process.env.AI_BASE_URL;
 const model: string = process.env.AI_MODEL || '';
 const AI_RETRIES: number = 2;
 
-const client = new OpenAI({apiKey: apiKey, baseURL, timeout: 60000});
+const client = new OpenAI({ apiKey: apiKey, baseURL, timeout: 60000 });
 
 const defaultRequirements: string =
   'Ты специалист по профориентации. Отвечай кратко, понятно и по делу на русском языке. Тебе категорически запрещено использовать звёздочки (*)';
@@ -58,9 +58,7 @@ async function createCompletionWithRetry(payload: CompletionPayload) {
       }
 
       const err = error as RetryableError;
-      console.warn(
-        `Ошибка запроса AI: ${err.name || err.code || err.message}`
-      );
+      console.warn(`Ошибка запроса AI: ${err.name || err.code || err.message}`);
       await delay(1000 * (attempt + 1));
     }
   }
@@ -72,7 +70,6 @@ export async function askAi(
   question: string,
   requirements: string = defaultRequirements
 ): Promise<string> {
-
   const completion = await createCompletionWithRetry({
     model,
     messages: [
@@ -107,165 +104,200 @@ if (!token) {
 const bot = new Bot(token);
 
 // Клавиатуры
-const startKeyboard = Keyboard.inlineKeyboard([[Keyboard.button.callback('Поехали!', 'newHero')]])
+const startKeyboard = Keyboard.inlineKeyboard([[Keyboard.button.callback('Поехали!', 'newHero')]]);
 
-const pol = Keyboard.inlineKeyboard([[
-        Keyboard.button.callback('Мужчина', 'menHero'),
-        Keyboard.button.callback('Женщина', 'womenHero'),
-    ]
-])
+const pol = Keyboard.inlineKeyboard([
+  [
+    Keyboard.button.callback('Мужчина', 'menHero'),
+    Keyboard.button.callback('Женщина', 'womenHero'),
+  ],
+]);
 
-const menHair = Keyboard.inlineKeyboard([[
-        Keyboard.button.callback('Светлые', 'menLight'),
-        Keyboard.button.callback('Темные', 'menDark'),
-    ]
-])
+const menHair = Keyboard.inlineKeyboard([
+  [Keyboard.button.callback('Светлые', 'menLight'), Keyboard.button.callback('Темные', 'menDark')],
+]);
 
-const womenHair = Keyboard.inlineKeyboard([[
-        Keyboard.button.callback('Светлые', 'womenLight'),
-        Keyboard.button.callback('Темные', 'womenDark'),
-    ]
-])
+const womenHair = Keyboard.inlineKeyboard([
+  [
+    Keyboard.button.callback('Светлые', 'womenLight'),
+    Keyboard.button.callback('Темные', 'womenDark'),
+  ],
+]);
 
-const menLightColor = Keyboard.inlineKeyboard([[
-        Keyboard.button.callback('Светлая', 'menLightLight'),
-        Keyboard.button.callback('Темная', 'menLightDark'),
-    ]
-])
+const menLightColor = Keyboard.inlineKeyboard([
+  [
+    Keyboard.button.callback('Светлая', 'menLightLight'),
+    Keyboard.button.callback('Темная', 'menLightDark'),
+  ],
+]);
 
-const menDarkColor = Keyboard.inlineKeyboard([[
-        Keyboard.button.callback('Светлая', 'menDarkLight'),
-        Keyboard.button.callback('Темная', 'menDarkDark'),
-    ]
-])
+const menDarkColor = Keyboard.inlineKeyboard([
+  [
+    Keyboard.button.callback('Светлая', 'menDarkLight'),
+    Keyboard.button.callback('Темная', 'menDarkDark'),
+  ],
+]);
 
-const womenLightColor = Keyboard.inlineKeyboard([[
-        Keyboard.button.callback('Светлая', 'womenLightLight'),
-        Keyboard.button.callback('Темная', 'womenLightDark'),
-    ]
-])
+const womenLightColor = Keyboard.inlineKeyboard([
+  [
+    Keyboard.button.callback('Светлая', 'womenLightLight'),
+    Keyboard.button.callback('Темная', 'womenLightDark'),
+  ],
+]);
 
-const womenDarkColor = Keyboard.inlineKeyboard([[
-        Keyboard.button.callback('Светлая', 'womenDarkLight'),
-        Keyboard.button.callback('Темная', 'womenDarkDark'),
-    ]
-])
+const womenDarkColor = Keyboard.inlineKeyboard([
+  [
+    Keyboard.button.callback('Светлая', 'womenDarkLight'),
+    Keyboard.button.callback('Темная', 'womenDarkDark'),
+  ],
+]);
 
-const mainKeyboard = Keyboard.inlineKeyboard([[
-        Keyboard.button.callback('Истории', 'choiseHistory'),
-        Keyboard.button.callback('Советчик', 'helpAI'),
-    ]
-])
+const mainKeyboard = Keyboard.inlineKeyboard([
+  [
+    Keyboard.button.callback('Истории', 'choiseHistory'),
+    Keyboard.button.callback('Советчик', 'helpAI'),
+  ],
+]);
 
 // Старт бота + создание персонажа
-bot.on('bot_started', (ctx) => 
-    ctx.reply(`Привет!
+bot.on('bot_started', (ctx) =>
+  ctx.reply(
+    `Привет!
         
 Скоро ты попадёшь в истории, где ты — главный герой. Каждая история поможет понять, какая профессия тебе подходит.
         
 Но для начала нам нужно создать твоего персонажа!
-`, { attachments: [startKeyboard] })
+`,
+    { attachments: [startKeyboard] }
+  )
 );
 
-bot.action('newHero', ctx => {
-    ctx.reply('Выбери пол своего персонажа', { attachments: [pol] })
-})
+bot.action('newHero', (ctx) => {
+  ctx.reply('Выбери пол своего персонажа', { attachments: [pol] });
+});
 
-bot.action('menHero', ctx => {
-    ctx.reply('Теперь выберем цвет волос', { attachments: [menHair]})
-})
+bot.action('menHero', (ctx) => {
+  ctx.reply('Теперь выберем цвет волос', { attachments: [menHair] });
+});
 
-bot.action('womenHero', ctx => {
-    ctx.reply('Теперь выберем цвет волос', { attachments: [womenHair]})
-})
+bot.action('womenHero', (ctx) => {
+  ctx.reply('Теперь выберем цвет волос', { attachments: [womenHair] });
+});
 
-bot.action('menLight', ctx => {
-    ctx.reply('Осталось выбрать цвет кожи', { attachments: [menLightColor]})
-})
+bot.action('menLight', (ctx) => {
+  ctx.reply('Осталось выбрать цвет кожи', { attachments: [menLightColor] });
+});
 
-bot.action('menDark', ctx => {
-    ctx.reply('Осталось выбрать цвет кожи', { attachments: [menDarkColor]})
-})
+bot.action('menDark', (ctx) => {
+  ctx.reply('Осталось выбрать цвет кожи', { attachments: [menDarkColor] });
+});
 
-bot.action('womenLight', ctx => {
-    ctx.reply('Осталось выбрать цвет кожи', { attachments: [womenLightColor]})
-})
+bot.action('womenLight', (ctx) => {
+  ctx.reply('Осталось выбрать цвет кожи', { attachments: [womenLightColor] });
+});
 
-bot.action('womenDark', ctx => {
-    ctx.reply('Осталось выбрать цвет кожи', { attachments: [womenDarkColor]})
-})
+bot.action('womenDark', (ctx) => {
+  ctx.reply('Осталось выбрать цвет кожи', { attachments: [womenDarkColor] });
+});
 
-bot.action('menLightLight', ctx => {
-    ctx.reply(`Вау, получился отличный герой! 
+bot.action('menLightLight', (ctx) => {
+  ctx.reply(
+    `Вау, получился отличный герой! 
         
 Теперь ты можешь погрузиться в мир историй или найти ответы на свои вопросы у Советчика.
             
-Итак, чем ты хочешь заняться?`, { attachments: [mainKeyboard]})
-})
+Итак, чем ты хочешь заняться?`,
+    { attachments: [mainKeyboard] }
+  );
+});
 
-bot.action('menLightDark', ctx => {
-    ctx.reply(`Вау, получился отличный герой! 
+bot.action('menLightDark', (ctx) => {
+  ctx.reply(
+    `Вау, получился отличный герой! 
         
         Теперь ты можешь погрузиться в мир историй или найти ответы на свои вопросы у Советчика.
             
-        Итак, чем ты хочешь заняться?`, { attachments: [mainKeyboard]})
-})
+        Итак, чем ты хочешь заняться?`,
+    { attachments: [mainKeyboard] }
+  );
+});
 
-bot.action('menDarkLight', ctx => {
-    ctx.reply(`Вау, получился отличный герой! 
+bot.action('menDarkLight', (ctx) => {
+  ctx.reply(
+    `Вау, получился отличный герой! 
         
         Теперь ты можешь погрузиться в мир историй или найти ответы на свои вопросы у Советчика.
             
-        Итак, чем ты хочешь заняться?`, { attachments: [mainKeyboard]})
-})
+        Итак, чем ты хочешь заняться?`,
+    { attachments: [mainKeyboard] }
+  );
+});
 
-bot.action('menDarkLight', ctx => {
-    ctx.reply(`Вау, получился отличный герой! 
+bot.action('menDarkLight', (ctx) => {
+  ctx.reply(
+    `Вау, получился отличный герой! 
         
         Теперь ты можешь погрузиться в мир историй или найти ответы на свои вопросы у Советчика.
             
-        Итак, чем ты хочешь заняться?`, { attachments: [mainKeyboard]})
-})
+        Итак, чем ты хочешь заняться?`,
+    { attachments: [mainKeyboard] }
+  );
+});
 
-bot.action('womenLightLight', ctx => {
-    ctx.reply(`Вау, получился отличный герой! 
+bot.action('womenLightLight', (ctx) => {
+  ctx.reply(
+    `Вау, получился отличный герой! 
         
         Теперь ты можешь погрузиться в мир историй или найти ответы на свои вопросы у Советчика.
             
-        Итак, чем ты хочешь заняться?`, { attachments: [mainKeyboard]})
-})
+        Итак, чем ты хочешь заняться?`,
+    { attachments: [mainKeyboard] }
+  );
+});
 
-bot.action('womenLightDark', ctx => {
-    ctx.reply(`Вау, получился отличный герой! 
+bot.action('womenLightDark', (ctx) => {
+  ctx.reply(
+    `Вау, получился отличный герой! 
         
         Теперь ты можешь погрузиться в мир историй или найти ответы на свои вопросы у Советчика.
             
-        Итак, чем ты хочешь заняться?`, { attachments: [mainKeyboard]})
-})
+        Итак, чем ты хочешь заняться?`,
+    { attachments: [mainKeyboard] }
+  );
+});
 
-bot.action('womenDarkLight', ctx => {
-    ctx.reply(`Вау, получился отличный герой! 
+bot.action('womenDarkLight', (ctx) => {
+  ctx.reply(
+    `Вау, получился отличный герой! 
         
         Теперь ты можешь погрузиться в мир историй или найти ответы на свои вопросы у Советчика.
             
-        Итак, чем ты хочешь заняться?`, { attachments: [mainKeyboard]})
-})
+        Итак, чем ты хочешь заняться?`,
+    { attachments: [mainKeyboard] }
+  );
+});
 
-bot.action('womenDarkLight', ctx => {
-    ctx.reply(`Вау, получился отличный герой! 
+bot.action('womenDarkLight', (ctx) => {
+  ctx.reply(
+    `Вау, получился отличный герой! 
         
         Теперь ты можешь погрузиться в мир историй или найти ответы на свои вопросы у Советчика.
             
-        Итак, чем ты хочешь заняться?`, { attachments: [mainKeyboard]})
-})
+        Итак, чем ты хочешь заняться?`,
+    { attachments: [mainKeyboard] }
+  );
+});
 
 // Меню бота
-bot.action('menu', ctx => {
-    ctx.reply(`Сейчас ты можешь погрузиться в мир историй или найти ответы на свои вопросы у Советчика.
+bot.action('menu', (ctx) => {
+  ctx.reply(
+    `Сейчас ты можешь погрузиться в мир историй или найти ответы на свои вопросы у Советчика.
             
         Итак, чем ты хочешь заняться?
-        `, { attachments: [mainKeyboard] })
-})
+        `,
+    { attachments: [mainKeyboard] }
+  );
+});
 
 // Советчик
 const questionRequirements = `
@@ -330,22 +362,17 @@ bot.on('message_created', async (ctx: Context) => {
     await ctx.reply(answer);
     usersInQuestionScene.delete(ctx.chatId);
 
-    await ctx.reply(
-      'Продолжим? Выбирай раздел и действуй!',
-      { attachments: [mainKeyboard] }
-    );
+    await ctx.reply('Продолжим? Выбирай раздел и действуй!', { attachments: [mainKeyboard] });
   } catch (error) {
     console.error(error);
 
     usersInQuestionScene.delete(ctx.chatId);
 
-    await ctx.reply(
-      'Мы задумались и допустили ошибку. Нажми "Советчик" ещё раз!',
-      { attachments: [mainKeyboard] }
-    );
+    await ctx.reply('Мы задумались и допустили ошибку. Нажми "Советчик" ещё раз!', {
+      attachments: [mainKeyboard],
+    });
   }
 });
-
 
 // Старт бота
 bot.start();

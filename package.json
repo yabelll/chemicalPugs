@@ -12,8 +12,7 @@
     "dev": "nodemon --watch src --exec tsx src/index.ts",
     "lint": "eslint src --ext .ts",
     "lint:fix": "eslint src --ext .ts --fix",
-    "format": "prettier --write .",
-    "postinstall": "prisma skills sync || exit 0"
+    "format": "prettier --write ."
   },
   "dependencies": {
     "@maxhub/max-bot-api": "^0.3.1",
@@ -22,17 +21,20 @@
     "openai": "^7.23.0"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@types/node": "^26.6.2",
     "@typescript-eslint/eslint-plugin": "^8.46.4",
     "@typescript-eslint/parser": "^8.46.4",
     "eslint": "^10.11.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
+    "globals": "^17.12.0",
     "nodemon": "^3.1.4",
     "prettier": "^3.6.2",
     "prisma": "5",
     "tsx": "^4.23.15",
-    "typescript": "^7.0.2"
+    "typescript": "^6.0.2",
+    "typescript-eslint": "^8.70.1"
   },
   "type": "module"
 }
