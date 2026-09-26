@@ -95,7 +95,7 @@ export function askAiByRequirements(requirements: string): Promise<string> {
 }
 
 // Подготовка бота
-import { Bot, Keyboard } from '@maxhub/max-bot-api';
+import { Bot, Keyboard, Context } from '@maxhub/max-bot-api';
 
 const token = process.env.BOT_TOKEN;
 if (!token) {
@@ -256,7 +256,12 @@ bot.action('womenLight', async (ctx) => {
   const imageLight = await ctx.api.uploadImage({ source: './image/222.png' });
   const imageDark = await ctx.api.uploadImage({ source: './image/232.png' });
   await ctx.reply('Осталось выбрать цвет кожи', {
-    attachments: [womenLightColor, imageVeryLight.toJson(), imageLight.toJson(), imageDark.toJson()],
+    attachments: [
+      womenLightColor,
+      imageVeryLight.toJson(),
+      imageLight.toJson(),
+      imageDark.toJson(),
+    ],
   });
 });
 
@@ -545,12 +550,12 @@ const questionRequirements = `
 const usersInQuestionScene = new Set<number>();
 
 bot.action('helpAI', async (ctx: Context) => {
-  usersInQuestionScene.add(ctx.chatId);
+  usersInQuestionScene.add(ctx.chatId!);
   await ctx.reply('Здесь ты можешь задать свой вопрос, и мы тебе на него ответим!');
 });
 
 bot.on('message_created', async (ctx: Context) => {
-  if (!usersInQuestionScene.has(ctx.chatId)) {
+  if (!usersInQuestionScene.has(ctx.chatId!)) {
     return;
   }
 
@@ -561,18 +566,27 @@ bot.on('message_created', async (ctx: Context) => {
     return;
   }
 
+  let waitMessage: any = null;
+
   try {
-    await ctx.reply('Нужно немного подождать...');
+    waitMessage = await ctx.reply('Нужно немного подождать...');
     const answer = await askAi(question, questionRequirements);
 
+    if (waitMessage?.body?.mid) {
+      await ctx.deleteMessage(String(waitMessage.body.mid));
+    }
+
     await ctx.reply(answer);
-    usersInQuestionScene.delete(ctx.chatId);
+    usersInQuestionScene.delete(ctx.chatId!);
 
     await ctx.reply('Продолжим? Выбирай раздел и действуй!', { attachments: [mainKeyboard] });
   } catch (error) {
     console.error(error);
+    if (waitMessage?.body?.mid) {
+      await ctx.deleteMessage(String(waitMessage.body.mid)).catch(() => {});
+    }
 
-    usersInQuestionScene.delete(ctx.chatId);
+    usersInQuestionScene.delete(ctx.chatId!);
 
     await ctx.reply('Мы задумались и допустили ошибку. Нажми "Советчик" ещё раз!', {
       attachments: [mainKeyboard],
