@@ -9,13 +9,17 @@
   "scripts": {
     "build": "tsc",
     "run": "node dist/index.js",
-    "dev": "nodemon --watch src --exec node --loader ts-node/esm src/index.ts",
+    "dev": "nodemon --watch src --exec tsx src/index.ts",
     "lint": "eslint src --ext .ts",
     "lint:fix": "eslint src --ext .ts --fix",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "postinstall": "prisma skills sync || exit 0"
   },
   "dependencies": {
-    "@maxhub/max-bot-api": "^0.3.1"
+    "@maxhub/max-bot-api": "^0.3.1",
+    "@prisma/client": "5",
+    "dotenv": "^18.0.3",
+    "openai": "^7.23.0"
   },
   "devDependencies": {
     "@types/node": "^26.6.2",
@@ -26,7 +30,8 @@
     "eslint-plugin-prettier": "^5.5.4",
     "nodemon": "^3.1.4",
     "prettier": "^3.6.2",
-    "ts-node": "^10.9.1",
+    "prisma": "5",
+    "tsx": "^4.23.15",
     "typescript": "^7.0.2"
   },
   "type": "module"
