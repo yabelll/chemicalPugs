@@ -106,6 +106,13 @@ const bot = new Bot(token);
 // Клавиатуры
 const startKeyboard = Keyboard.inlineKeyboard([[Keyboard.button.callback('Поехали!', 'newHero')]]);
 
+const mainKeyboard = Keyboard.inlineKeyboard([
+  [
+    Keyboard.button.callback('Истории', 'choiseHistory'),
+    Keyboard.button.callback('Советчик', 'helpAI'),
+  ],
+]);
+
 const pol = Keyboard.inlineKeyboard([
   [
     Keyboard.button.callback('Мужчина', 'menHero'),
@@ -114,48 +121,66 @@ const pol = Keyboard.inlineKeyboard([
 ]);
 
 const menHair = Keyboard.inlineKeyboard([
-  [Keyboard.button.callback('Светлые', 'menLight'), Keyboard.button.callback('Темные', 'menDark')],
+  [
+    Keyboard.button.callback('Светлые', 'menLight'),
+    Keyboard.button.callback('Темные', 'menDark'),
+    Keyboard.button.callback('Рыжие', 'menRed'),
+  ],
 ]);
 
 const womenHair = Keyboard.inlineKeyboard([
   [
     Keyboard.button.callback('Светлые', 'womenLight'),
     Keyboard.button.callback('Темные', 'womenDark'),
+    Keyboard.button.callback('Рыжие', 'womenRed'),
   ],
 ]);
 
 const menLightColor = Keyboard.inlineKeyboard([
   [
-    Keyboard.button.callback('Светлая', 'menLightLight'),
+    Keyboard.button.callback('Светлая', 'menLightVeryLight'),
+    Keyboard.button.callback('Смуглая', 'menLightLight'),
     Keyboard.button.callback('Темная', 'menLightDark'),
   ],
 ]);
 
 const menDarkColor = Keyboard.inlineKeyboard([
   [
-    Keyboard.button.callback('Светлая', 'menDarkLight'),
+    Keyboard.button.callback('Светлая', 'menDarkVeryLight'),
+    Keyboard.button.callback('Смуглая', 'menDarkLight'),
     Keyboard.button.callback('Темная', 'menDarkDark'),
+  ],
+]);
+
+const menRedColor = Keyboard.inlineKeyboard([
+  [
+    Keyboard.button.callback('Светлая', 'menRedVeryLight'),
+    Keyboard.button.callback('Смуглая', 'menRedLight'),
+    Keyboard.button.callback('Темная', 'menRedDark'),
   ],
 ]);
 
 const womenLightColor = Keyboard.inlineKeyboard([
   [
-    Keyboard.button.callback('Светлая', 'womenLightLight'),
+    Keyboard.button.callback('Светлая', 'womenLightVeryLight'),
+    Keyboard.button.callback('Смуглая', 'womenLightLight'),
     Keyboard.button.callback('Темная', 'womenLightDark'),
   ],
 ]);
 
 const womenDarkColor = Keyboard.inlineKeyboard([
   [
-    Keyboard.button.callback('Светлая', 'womenDarkLight'),
+    Keyboard.button.callback('Светлая', 'womenDarkVeryLight'),
+    Keyboard.button.callback('Смуглая', 'womenDarkLight'),
     Keyboard.button.callback('Темная', 'womenDarkDark'),
   ],
 ]);
 
-const mainKeyboard = Keyboard.inlineKeyboard([
+const womenRedColor = Keyboard.inlineKeyboard([
   [
-    Keyboard.button.callback('Истории', 'choiseHistory'),
-    Keyboard.button.callback('Советчик', 'helpAI'),
+    Keyboard.button.callback('Светлая', 'womenRedVeryLight'),
+    Keyboard.button.callback('Смуглая', 'womenRedLight'),
+    Keyboard.button.callback('Темная', 'womenRedDark'),
   ],
 ]);
 
@@ -172,119 +197,300 @@ bot.on('bot_started', (ctx) =>
   )
 );
 
-bot.action('newHero', (ctx) => {
-  ctx.reply('Выбери пол своего персонажа', { attachments: [pol] });
+bot.action('newHero', async (ctx) => {
+  const imageMen = await ctx.api.uploadImage({ source: './image/113.png' });
+  const imageWomen = await ctx.api.uploadImage({ source: './image/213.png' });
+  await ctx.reply('Выбери пол своего персонажа', {
+    attachments: [pol, imageMen.toJson(), imageWomen.toJson()],
+  });
 });
 
-bot.action('menHero', (ctx) => {
-  ctx.reply('Теперь выберем цвет волос', { attachments: [menHair] });
+bot.action('menHero', async (ctx) => {
+  const imageBlack = await ctx.api.uploadImage({ source: './image/113.png' });
+  const imageWhite = await ctx.api.uploadImage({ source: './image/112.png' });
+  const imageRed = await ctx.api.uploadImage({ source: './image/111.png' });
+
+  await ctx.reply('Теперь выберем цвет волос', {
+    attachments: [menHair, imageWhite.toJson(), imageBlack.toJson(), imageRed.toJson()],
+  });
 });
 
-bot.action('womenHero', (ctx) => {
-  ctx.reply('Теперь выберем цвет волос', { attachments: [womenHair] });
+bot.action('womenHero', async (ctx) => {
+  const imageBlack = await ctx.api.uploadImage({ source: './image/213.png' });
+  const imageWhite = await ctx.api.uploadImage({ source: './image/212.png' });
+  const imageRed = await ctx.api.uploadImage({ source: './image/211.png' });
+  ctx.reply('Теперь выберем цвет волос', {
+    attachments: [womenHair, imageWhite.toJson(), imageBlack.toJson(), imageRed.toJson()],
+  });
 });
 
-bot.action('menLight', (ctx) => {
-  ctx.reply('Осталось выбрать цвет кожи', { attachments: [menLightColor] });
+bot.action('menLight', async (ctx) => {
+  const imageVeryLight = await ctx.api.uploadImage({ source: './image/112.png' });
+  const imageLight = await ctx.api.uploadImage({ source: './image/122.png' });
+  const imageDark = await ctx.api.uploadImage({ source: './image/132.png' });
+  await ctx.reply('Осталось выбрать цвет кожи', {
+    attachments: [menLightColor, imageVeryLight.toJson(), imageLight.toJson(), imageDark.toJson()],
+  });
 });
 
-bot.action('menDark', (ctx) => {
-  ctx.reply('Осталось выбрать цвет кожи', { attachments: [menDarkColor] });
+bot.action('menDark', async (ctx) => {
+  const imageVeryLight = await ctx.api.uploadImage({ source: './image/113.png' });
+  const imageLight = await ctx.api.uploadImage({ source: './image/123.png' });
+  const imageDark = await ctx.api.uploadImage({ source: './image/133.png' });
+  await ctx.reply('Осталось выбрать цвет кожи', {
+    attachments: [menDarkColor, imageVeryLight.toJson(), imageLight.toJson(), imageDark.toJson()],
+  });
 });
 
-bot.action('womenLight', (ctx) => {
-  ctx.reply('Осталось выбрать цвет кожи', { attachments: [womenLightColor] });
+bot.action('menRed', async (ctx) => {
+  const imageVeryLight = await ctx.api.uploadImage({ source: './image/111.png' });
+  const imageLight = await ctx.api.uploadImage({ source: './image/121.png' });
+  const imageDark = await ctx.api.uploadImage({ source: './image/131.png' });
+  await ctx.reply('Осталось выбрать цвет кожи', {
+    attachments: [menRedColor, imageVeryLight.toJson(), imageLight.toJson(), imageDark.toJson()],
+  });
 });
 
-bot.action('womenDark', (ctx) => {
-  ctx.reply('Осталось выбрать цвет кожи', { attachments: [womenDarkColor] });
+bot.action('womenLight', async (ctx) => {
+  const imageVeryLight = await ctx.api.uploadImage({ source: './image/212.png' });
+  const imageLight = await ctx.api.uploadImage({ source: './image/222.png' });
+  const imageDark = await ctx.api.uploadImage({ source: './image/232.png' });
+  await ctx.reply('Осталось выбрать цвет кожи', {
+    attachments: [womenLightColor, imageVeryLight.toJson(), imageLight.toJson(), imageDark.toJson()],
+  });
 });
 
-bot.action('menLightLight', (ctx) => {
+bot.action('womenDark', async (ctx) => {
+  const imageVeryLight = await ctx.api.uploadImage({ source: './image/213.png' });
+  const imageLight = await ctx.api.uploadImage({ source: './image/223.png' });
+  const imageDark = await ctx.api.uploadImage({ source: './image/233.png' });
+  await ctx.reply('Осталось выбрать цвет кожи', {
+    attachments: [womenDarkColor, imageVeryLight.toJson(), imageLight.toJson(), imageDark.toJson()],
+  });
+});
+
+bot.action('womenRed', async (ctx) => {
+  const imageVeryLight = await ctx.api.uploadImage({ source: './image/211.png' });
+  const imageLight = await ctx.api.uploadImage({ source: './image/221.png' });
+  const imageDark = await ctx.api.uploadImage({ source: './image/231.png' });
+  await ctx.reply('Осталось выбрать цвет кожи', {
+    attachments: [womenRedColor, imageVeryLight.toJson(), imageLight.toJson(), imageDark.toJson()],
+  });
+});
+
+bot.action('menLightVeryLight', async (ctx) => {
+  const image = await ctx.api.uploadImage({ source: './image/112.png' });
   ctx.reply(
     `Вау, получился отличный герой! 
         
 Теперь ты можешь погрузиться в мир историй или найти ответы на свои вопросы у Советчика.
             
 Итак, чем ты хочешь заняться?`,
-    { attachments: [mainKeyboard] }
+    { attachments: [mainKeyboard, image.toJson()] }
   );
 });
 
-bot.action('menLightDark', (ctx) => {
-  ctx.reply(
+bot.action('menLightLight', async (ctx) => {
+  const image = await ctx.api.uploadImage({ source: './image/122.png' });
+  await ctx.reply(
     `Вау, получился отличный герой! 
         
-        Теперь ты можешь погрузиться в мир историй или найти ответы на свои вопросы у Советчика.
+Теперь ты можешь погрузиться в мир историй или найти ответы на свои вопросы у Советчика.
             
-        Итак, чем ты хочешь заняться?`,
-    { attachments: [mainKeyboard] }
+Итак, чем ты хочешь заняться?`,
+    { attachments: [mainKeyboard, image.toJson()] }
   );
 });
 
-bot.action('menDarkLight', (ctx) => {
-  ctx.reply(
+bot.action('menLightDark', async (ctx) => {
+  const image = await ctx.api.uploadImage({ source: './image/132.png' });
+  await ctx.reply(
     `Вау, получился отличный герой! 
         
-        Теперь ты можешь погрузиться в мир историй или найти ответы на свои вопросы у Советчика.
+Теперь ты можешь погрузиться в мир историй или найти ответы на свои вопросы у Советчика.
             
-        Итак, чем ты хочешь заняться?`,
-    { attachments: [mainKeyboard] }
+Итак, чем ты хочешь заняться?`,
+    { attachments: [mainKeyboard, image.toJson()] }
   );
 });
 
-bot.action('menDarkLight', (ctx) => {
-  ctx.reply(
+bot.action('menDarkVeryLight', async (ctx) => {
+  const image = await ctx.api.uploadImage({ source: './image/113.png' });
+  await ctx.reply(
     `Вау, получился отличный герой! 
         
-        Теперь ты можешь погрузиться в мир историй или найти ответы на свои вопросы у Советчика.
+Теперь ты можешь погрузиться в мир историй или найти ответы на свои вопросы у Советчика.
             
-        Итак, чем ты хочешь заняться?`,
-    { attachments: [mainKeyboard] }
+Итак, чем ты хочешь заняться?`,
+    { attachments: [mainKeyboard, image.toJson()] }
   );
 });
 
-bot.action('womenLightLight', (ctx) => {
-  ctx.reply(
+bot.action('menDarkLight', async (ctx) => {
+  const image = await ctx.api.uploadImage({ source: './image/123.png' });
+  await ctx.reply(
     `Вау, получился отличный герой! 
         
-        Теперь ты можешь погрузиться в мир историй или найти ответы на свои вопросы у Советчика.
+Теперь ты можешь погрузиться в мир историй или найти ответы на свои вопросы у Советчика.
             
-        Итак, чем ты хочешь заняться?`,
-    { attachments: [mainKeyboard] }
+Итак, чем ты хочешь заняться?`,
+    { attachments: [mainKeyboard, image.toJson()] }
   );
 });
 
-bot.action('womenLightDark', (ctx) => {
-  ctx.reply(
+bot.action('menDarkDark', async (ctx) => {
+  const image = await ctx.api.uploadImage({ source: './image/133.png' });
+  await ctx.reply(
     `Вау, получился отличный герой! 
         
-        Теперь ты можешь погрузиться в мир историй или найти ответы на свои вопросы у Советчика.
+Теперь ты можешь погрузиться в мир историй или найти ответы на свои вопросы у Советчика.
             
-        Итак, чем ты хочешь заняться?`,
-    { attachments: [mainKeyboard] }
+Итак, чем ты хочешь заняться?`,
+    { attachments: [mainKeyboard, image.toJson()] }
   );
 });
 
-bot.action('womenDarkLight', (ctx) => {
-  ctx.reply(
+bot.action('menRedVeryLight', async (ctx) => {
+  const image = await ctx.api.uploadImage({ source: './image/111.png' });
+  await ctx.reply(
     `Вау, получился отличный герой! 
         
-        Теперь ты можешь погрузиться в мир историй или найти ответы на свои вопросы у Советчика.
+Теперь ты можешь погрузиться в мир историй или найти ответы на свои вопросы у Советчика.
             
-        Итак, чем ты хочешь заняться?`,
-    { attachments: [mainKeyboard] }
+Итак, чем ты хочешь заняться?`,
+    { attachments: [mainKeyboard, image.toJson()] }
   );
 });
 
-bot.action('womenDarkLight', (ctx) => {
+bot.action('menRedLight', async (ctx) => {
+  const image = await ctx.api.uploadImage({ source: './image/121.png' });
+  await ctx.reply(
+    `Вау, получился отличный герой! 
+        
+Теперь ты можешь погрузиться в мир историй или найти ответы на свои вопросы у Советчика.
+            
+Итак, чем ты хочешь заняться?`,
+    { attachments: [mainKeyboard, image.toJson()] }
+  );
+});
+
+bot.action('menRedDark', async (ctx) => {
+  const image = await ctx.api.uploadImage({ source: './image/131.png' });
+  await ctx.reply(
+    `Вау, получился отличный герой! 
+        
+Теперь ты можешь погрузиться в мир историй или найти ответы на свои вопросы у Советчика.
+            
+Итак, чем ты хочешь заняться?`,
+    { attachments: [mainKeyboard, image.toJson()] }
+  );
+});
+
+bot.action('womenLightVeryLight', async (ctx) => {
+  const image = await ctx.api.uploadImage({ source: './image/212.png' });
   ctx.reply(
     `Вау, получился отличный герой! 
         
-        Теперь ты можешь погрузиться в мир историй или найти ответы на свои вопросы у Советчика.
+Теперь ты можешь погрузиться в мир историй или найти ответы на свои вопросы у Советчика.
             
-        Итак, чем ты хочешь заняться?`,
-    { attachments: [mainKeyboard] }
+Итак, чем ты хочешь заняться?`,
+    { attachments: [mainKeyboard, image.toJson()] }
+  );
+});
+
+bot.action('womenLightLight', async (ctx) => {
+  const image = await ctx.api.uploadImage({ source: './image/222.png' });
+  await ctx.reply(
+    `Вау, получился отличный герой! 
+        
+Теперь ты можешь погрузиться в мир историй или найти ответы на свои вопросы у Советчика.
+            
+Итак, чем ты хочешь заняться?`,
+    { attachments: [mainKeyboard, image.toJson()] }
+  );
+});
+
+bot.action('womenLightDark', async (ctx) => {
+  const image = await ctx.api.uploadImage({ source: './image/232.png' });
+  await ctx.reply(
+    `Вау, получился отличный герой! 
+        
+Теперь ты можешь погрузиться в мир историй или найти ответы на свои вопросы у Советчика.
+            
+Итак, чем ты хочешь заняться?`,
+    { attachments: [mainKeyboard, image.toJson()] }
+  );
+});
+
+bot.action('womenDarkVeryLight', async (ctx) => {
+  const image = await ctx.api.uploadImage({ source: './image/213.png' });
+  await ctx.reply(
+    `Вау, получился отличный герой! 
+        
+Теперь ты можешь погрузиться в мир историй или найти ответы на свои вопросы у Советчика.
+            
+Итак, чем ты хочешь заняться?`,
+    { attachments: [mainKeyboard, image.toJson()] }
+  );
+});
+
+bot.action('womenDarkLight', async (ctx) => {
+  const image = await ctx.api.uploadImage({ source: './image/223.png' });
+  await ctx.reply(
+    `Вау, получился отличный герой! 
+        
+Теперь ты можешь погрузиться в мир историй или найти ответы на свои вопросы у Советчика.
+            
+Итак, чем ты хочешь заняться?`,
+    { attachments: [mainKeyboard, image.toJson()] }
+  );
+});
+
+bot.action('womenDarkDark', async (ctx) => {
+  const image = await ctx.api.uploadImage({ source: './image/233.png' });
+  await ctx.reply(
+    `Вау, получился отличный герой! 
+        
+Теперь ты можешь погрузиться в мир историй или найти ответы на свои вопросы у Советчика.
+            
+Итак, чем ты хочешь заняться?`,
+    { attachments: [mainKeyboard, image.toJson()] }
+  );
+});
+
+bot.action('womenRedVeryLight', async (ctx) => {
+  const image = await ctx.api.uploadImage({ source: './image/211.png' });
+  await ctx.reply(
+    `Вау, получился отличный герой! 
+        
+Теперь ты можешь погрузиться в мир историй или найти ответы на свои вопросы у Советчика.
+            
+Итак, чем ты хочешь заняться?`,
+    { attachments: [mainKeyboard, image.toJson()] }
+  );
+});
+
+bot.action('womenRedLight', async (ctx) => {
+  const image = await ctx.api.uploadImage({ source: './image/221.png' });
+  await ctx.reply(
+    `Вау, получился отличный герой! 
+        
+Теперь ты можешь погрузиться в мир историй или найти ответы на свои вопросы у Советчика.
+            
+Итак, чем ты хочешь заняться?`,
+    { attachments: [mainKeyboard, image.toJson()] }
+  );
+});
+
+bot.action('womenRedDark', async (ctx) => {
+  const image = await ctx.api.uploadImage({ source: './image/231.png' });
+  await ctx.reply(
+    `Вау, получился отличный герой! 
+        
+Теперь ты можешь погрузиться в мир историй или найти ответы на свои вопросы у Советчика.
+            
+Итак, чем ты хочешь заняться?`,
+    { attachments: [mainKeyboard, image.toJson()] }
   );
 });
 
@@ -293,7 +499,7 @@ bot.action('menu', (ctx) => {
   ctx.reply(
     `Сейчас ты можешь погрузиться в мир историй или найти ответы на свои вопросы у Советчика.
             
-        Итак, чем ты хочешь заняться?
+Итак, чем ты хочешь заняться?
         `,
     { attachments: [mainKeyboard] }
   );
