@@ -19,11 +19,29 @@ database.exec(`
   )
 `);
 
-const columns = database.prepare('PRAGMA table_info(players)').all() as { name: string }[];
-for (const column of ['first_name', 'last_name', 'username']) {
-  if (columns.some((item) => item.name === column)) {
-    database.exec(`ALTER TABLE players DROP COLUMN ${column}`);
+database.exec(`
+  CREATE TABLE IF NOT EXISTS schema_migrations (
+    name TEXT PRIMARY KEY,
+    applied_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+  )
+`);
+
+const removePersonalFieldsMigration = 'remove_personal_fields';
+const appliedMigration = database
+  .prepare('SELECT name FROM schema_migrations WHERE name = ?')
+  .get(removePersonalFieldsMigration);
+
+if (!appliedMigration) {
+  const columns = database.prepare('PRAGMA table_info(players)').all() as { name: string }[];
+  for (const column of ['first_name', 'last_name', 'username']) {
+    if (columns.some((item) => item.name === column)) {
+      database.exec(`ALTER TABLE players DROP COLUMN ${column}`);
+    }
   }
+
+  database
+    .prepare('INSERT INTO schema_migrations (name) VALUES (?)')
+    .run(removePersonalFieldsMigration);
 }
 
 export type HeroGender = 'male' | 'female';
@@ -66,13 +84,7 @@ export function registerUser(userId: number): void {
 }
 
 export function saveHero(userId: number, hero: Hero): void {
-  heroUpsert.run(
-    String(userId),
-    hero.gender,
-    hero.hairColor,
-    hero.skinTone,
-    hero.imagePath
-  );
+  heroUpsert.run(String(userId), hero.gender, hero.hairColor, hero.skinTone, hero.imagePath);
 }
 
 export function getHero(userId: number): Partial<Hero> | undefined {
