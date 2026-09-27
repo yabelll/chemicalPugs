@@ -32,9 +32,34 @@ database.exec(`
     advisor_active INTEGER NOT NULL DEFAULT 0,
     chapter1_answers TEXT,
     chapter1_stage TEXT,
+    chapter2_answers TEXT,
+    chapter2_stage TEXT,
     updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
   )
 `);
+
+const addChapter2ProgressMigration = 'add_chapter2_progress';
+const chapter2MigrationApplied = database
+  .prepare('SELECT name FROM schema_migrations WHERE name = ?')
+  .get(addChapter2ProgressMigration);
+
+if (!chapter2MigrationApplied) {
+  const sessionColumns = database.prepare('PRAGMA table_info(user_sessions)').all() as {
+    name: string;
+  }[];
+
+  if (!sessionColumns.some((column) => column.name === 'chapter2_answers')) {
+    database.exec('ALTER TABLE user_sessions ADD COLUMN chapter2_answers TEXT');
+  }
+
+  if (!sessionColumns.some((column) => column.name === 'chapter2_stage')) {
+    database.exec('ALTER TABLE user_sessions ADD COLUMN chapter2_stage TEXT');
+  }
+
+  database
+    .prepare('INSERT INTO schema_migrations (name) VALUES (?)')
+    .run(addChapter2ProgressMigration);
+}
 
 const removePersonalFieldsMigration = 'remove_personal_fields';
 const appliedMigration = database
@@ -130,6 +155,29 @@ const clearChapter1 = database.prepare(`
   WHERE user_id = ?
 `);
 
+const startChapter2 = database.prepare(`
+  INSERT INTO user_sessions (user_id, chapter2_answers, chapter2_stage)
+  VALUES (?, '', 'choice1')
+  ON CONFLICT(user_id) DO UPDATE SET
+    chapter2_answers = '', chapter2_stage = 'choice1', updated_at = CURRENT_TIMESTAMP
+`);
+
+const addChapter2Choice = database.prepare(`
+  UPDATE user_sessions
+  SET chapter2_answers = chapter2_answers || ?, chapter2_stage = ?, updated_at = CURRENT_TIMESTAMP
+  WHERE user_id = ? AND chapter2_stage = ?
+`);
+
+const chapter2ProgressByUserId = database.prepare(`
+  SELECT chapter2_answers AS answers FROM user_sessions WHERE user_id = ?
+`);
+
+const clearChapter2 = database.prepare(`
+  UPDATE user_sessions
+  SET chapter2_answers = NULL, chapter2_stage = NULL, updated_at = CURRENT_TIMESTAMP
+  WHERE user_id = ?
+`);
+
 export function registerUser(userId: number): void {
   userUpsert.run(String(userId));
 }
@@ -178,4 +226,28 @@ export function getChapter1AnswersForUser(userId: number): string | undefined {
 
 export function clearChapter1ForUser(userId: number): void {
   clearChapter1.run(String(userId));
+}
+
+export function startChapter2ForUser(userId: number): void {
+  startChapter2.run(String(userId));
+}
+
+export function addChapter2ChoiceForUser(
+  userId: number,
+  expectedStage: string,
+  nextStage: string,
+  answer: 'A' | 'B' | 'C'
+): boolean {
+  const result = addChapter2Choice.run(answer, nextStage, String(userId), expectedStage);
+  return Number(result.changes) === 1;
+}
+
+export function getChapter2AnswersForUser(userId: number): string | undefined {
+  const progress = chapter2ProgressByUserId.get(String(userId)) as
+    { answers: string | null } | undefined;
+  return progress?.answers ?? undefined;
+}
+
+export function clearChapter2ForUser(userId: number): void {
+  clearChapter2.run(String(userId));
 }
