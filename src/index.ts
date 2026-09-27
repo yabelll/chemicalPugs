@@ -3,7 +3,7 @@
 import './advisor.js';
 import './hero.js';
 import './menu.js';
-import './stories.js';
+import './histories.js';
 import { bot } from './bot.js';
 
 bot.start();

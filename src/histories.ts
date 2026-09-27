@@ -1,9 +1,11 @@
 ﻿import { Keyboard, type Context } from '@maxhub/max-bot-api';
+import { basename } from 'node:path';
 import { bot, userIdFromContext } from './bot.js';
 import { imagePath } from './assets.js';
 import {
   addChapter1ChoiceForUser,
   clearChapter1ForUser,
+  getHero,
   getChapter1AnswersForUser,
   startChapter1ForUser,
 } from './database.js';
@@ -37,7 +39,13 @@ const history1Keyboard = Keyboard.inlineKeyboard([
 ]);
 
 bot.action('history1', async (ctx) => {
-  startChapter1ForUser(userIdFromContext(ctx));
+  const userId = userIdFromContext(ctx);
+  startChapter1ForUser(userId);
+  const hero = getHero(userId);
+  const heroImageFilename = hero?.imagePath ? basename(hero.imagePath) : undefined;
+  const prologueImage = heroImageFilename
+    ? await getUploadedImage(ctx, imagePath(`Пролог${heroImageFilename}`))
+    : undefined;
   await ctx.reply(
     `Поезд замедляет ход. За окном — мрачный город, окутанный туманом. Фонари едва пробивают сырую мглу. Ты смотришь на конверт в своей руке: «Черный Город. Пропало семеро. Полиция бессильна. Помоги». Подпись — твой старый наставник, который исчез три недели назад.
 
@@ -49,7 +57,9 @@ bot.action('history1', async (ctx) => {
 
 Носильщик (шепотом): «Он был в отеле "Гарпия". Но не советую туда соваться. Хозяин — странный тип. И да... не пейте там кофе».
 `,
-    { attachments: [history1Keyboard] }
+    {
+      attachments: prologueImage ? [history1Keyboard, prologueImage.toJson()] : [history1Keyboard],
+    }
   );
 });
 
@@ -359,7 +369,7 @@ const history1_9AKeyboard = Keyboard.inlineKeyboard([
   [Keyboard.button.callback('Продолжить', 'history1_9A_1')],
 ]);
 const history1_9BKeyboard = Keyboard.inlineKeyboard([
-  [Keyboard.button.callback('Пообещать', 'history1_9B_1')],
+  [Keyboard.button.callback('Продолжить', 'history1_9B_1')],
 ]);
 const history1_9CKeyboard = Keyboard.inlineKeyboard([
   [Keyboard.button.callback('Продолжить', 'history1_9C_1')],
