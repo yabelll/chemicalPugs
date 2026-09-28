@@ -29,7 +29,7 @@ function getHistory2PrologueFilename(hero: ReturnType<typeof getHero>): string |
   const skinTone = { veryLight: '1', light: '2', dark: '3' }[hero.skinTone];
   const hairColor = { red: '1', light: '2', dark: '3' }[hero.hairColor];
 
-  return `Пролог${gender}${skinTone}${hairColor}.png`;
+  return `prolog${gender}${skinTone}${hairColor}.png`;
 }
 
 const history2Keyboard = Keyboard.inlineKeyboard([

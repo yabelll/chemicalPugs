@@ -31,7 +31,7 @@ bot.action('history1', async (ctx) => {
   const hero = getHero(userId);
   const heroImageFilename = hero?.imagePath ? basename(hero.imagePath) : undefined;
   const prologueImage = heroImageFilename
-    ? await getUploadedImage(ctx, imagePath(`Пролог${heroImageFilename}`))
+    ? await getUploadedImage(ctx, imagePath(`prolog${heroImageFilename}`))
     : undefined;
   await ctx.reply(
     `Поезд замедляет ход. За окном — мрачный город, окутанный туманом. Фонари едва пробивают сырую мглу. Ты смотришь на конверт в своей руке: *«Черный Город. Пропало семеро. Полиция бессильна. Помоги».* Подпись — твой старый наставник, который исчез три недели назад.
